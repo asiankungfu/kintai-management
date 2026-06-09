@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: kintai-management
+  datasource:
+    url: jdbc:h2:mem:kintai;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  h2:
+    console:
+      enabled: true   # http://localhost:8080/h2-console
+
+# 就業規則
+kintai:
+  work-rule:
+    standard-work-minutes: 480   # 所定労働時間（8時間）
+
+logging:
+  level:
+    com.example.kintai: INFO
+
+---
+# 本番想定（PostgreSQL）: --spring.profiles.active=prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/kintai}
+    username: ${DB_USER:kintai}
+    password: ${DB_PASSWORD:kintai}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  h2:
+    console:
+      enabled: false

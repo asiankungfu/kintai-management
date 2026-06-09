@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${employee.name} + ' | 勤怠'">勤怠</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <h1 th:text="${employee.name} + ' さんの勤怠'">勤怠</h1>
+    <p class="subtitle"><a th:href="@{/}">← 社員一覧</a></p>
+</header>
+<main>
+    <div class="actions">
+        <form th:action="@{'/employees/' + ${employee.id} + '/clock-in'}" method="post">
+            <button type="submit" class="btn btn-in">出勤打刻</button>
+        </form>
+        <form th:action="@{'/employees/' + ${employee.id} + '/clock-out'}" method="post" class="inline">
+            休憩<input type="number" name="breakMinutes" value="60" min="0" class="mini">分
+            <button type="submit" class="btn btn-out">退勤打刻</button>
+        </form>
+    </div>
+
+    <section class="summary-card">
+        <h2 th:text="${summary.year} + '年' + ${summary.month} + '月 集計'">今月集計</h2>
+        <div class="summary-grid">
+            <div><span>出勤日数</span><strong th:text="${summary.daysPresent} + '日'">0日</strong></div>
+            <div><span>労働時間</span><strong th:text="${summary.workedLabel()}">0:00</strong></div>
+            <div><span>残業時間</span><strong class="ot" th:text="${summary.overtimeLabel()}">0:00</strong></div>
+            <div><span>深夜時間</span><strong class="night" th:text="${summary.lateNightLabel()}">0:00</strong></div>
+        </div>
+    </section>
+
+    <h2>勤怠記録</h2>
+    <table class="data-table">
+        <thead>
+        <tr><th>日付</th><th>出勤</th><th>退勤</th><th>休憩</th><th>労働</th><th>残業</th><th>深夜</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${rows}" th:classappend="${!r.closed()} ? 'open-row'">
+            <td th:text="${#temporals.format(r.date(), 'MM/dd (E)')}">06/01</td>
+            <td th:text="${r.clockIn() != null} ? ${#temporals.format(r.clockIn(), 'HH:mm')} : '—'">09:00</td>
+            <td th:text="${r.clockOut() != null} ? ${#temporals.format(r.clockOut(), 'HH:mm')} : '—'">18:00</td>
+            <td th:text="${r.breakMinutes()} + '分'">60分</td>
+            <td th:text="${r.workedLabel()}">8:00</td>
+            <td class="ot" th:text="${r.overtimeLabel()}">0:00</td>
+            <td class="night" th:text="${r.lateNightLabel()}">0:00</td>
+        </tr>
+        </tbody>
+    </table>
+    <p th:if="${#lists.isEmpty(rows)}" class="hint">記録がありません。</p>
+</main>
+</body>
+</html>

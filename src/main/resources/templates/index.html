@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勤怠管理システム</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <h1>勤怠管理システム</h1>
+    <p class="subtitle">打刻・残業/深夜の自動計算・申請承認・月次集計</p>
+</header>
+<main>
+    <h2>社員を選択</h2>
+    <table class="data-table">
+        <thead>
+        <tr><th>社員コード</th><th>氏名</th><th>部署</th><th>権限</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${employees}">
+            <td th:text="${e.code}">E001</td>
+            <td th:text="${e.name}">氏名</td>
+            <td th:text="${e.department}">部署</td>
+            <td th:text="${e.role.name() == 'MANAGER'} ? '管理者' : '一般'">権限</td>
+            <td>
+                <a th:href="@{'/employees/' + ${e.id} + '/attendance'}">勤怠</a>
+                ・<a th:href="@{'/employees/' + ${e.id} + '/requests'}">申請</a>
+                <span th:if="${e.role.name() == 'MANAGER'}">
+                    ・<a th:href="@{'/approvals'(approverId=${e.id})}">承認待ち</a>
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="hint">CSV出力: <code>/export/monthly.csv?year=2026&month=6</code></p>
+</main>
+</body>
+</html>
