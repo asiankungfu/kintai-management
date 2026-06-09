@@ -34,13 +34,13 @@ class ApprovalServiceTest {
         pending.setId(1L);
         pending.setApplicantId(10L);
         pending.setStatus(RequestStatus.PENDING);
-        when(repository.save(any(ApprovalRequest.class))).thenAnswer(i -> i.getArgument(0));
     }
 
     @Test
     @DisplayName("PENDINGの申請は承認できAPPROVEDになる")
     void approve() {
         when(repository.findById(1L)).thenReturn(Optional.of(pending));
+        when(repository.save(any(ApprovalRequest.class))).thenAnswer(i -> i.getArgument(0));
         ApprovalRequest r = service.approve(1L, 99L, "OK");
         assertThat(r.getStatus()).isEqualTo(RequestStatus.APPROVED);
         assertThat(r.getApproverId()).isEqualTo(99L);
